@@ -1,0 +1,33 @@
+{
+ "actions": [],
+ "creation": "2026-10-19 12:00:00.000000",
+ "description": "",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "public_site"
+ ],
+ "fields": [
+  {
+   "columns": 10,
+   "description": "The name of a Public Site (public_site_router), as on a lead's Public Site field.",
+   "fieldname": "public_site",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Public Site",
+   "reqd": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-19 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM Multi Company",
+ "name": "CRM Business Site",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

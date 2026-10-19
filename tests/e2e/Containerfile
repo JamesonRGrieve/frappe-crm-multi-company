@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# The test bench: the official ERPNext v16 image plus Frappe CRM (pinned to the commit production runs), the CRM
+# heat app, the Public Site router and this app. run.sh assembles the build context: crm_heat_tracking/,
+# public_site_router/ and crm_multi_company/ are copies of those repositories' working trees. Frontend assets are
+# not built: the tests drive the bench through its Python API only.
+ARG ERPNEXT_IMAGE
+FROM ${ERPNEXT_IMAGE}
+ARG CRM_REF
+# Frappe's test-record generator follows ERPNext's links to Payment Gateway (the payments app).
+ARG PAYMENTS_REF
+USER frappe
+WORKDIR /home/frappe/frappe-bench
+RUN git clone --quiet https://github.com/frappe/crm apps/crm \
+	&& git -C apps/crm checkout --quiet "${CRM_REF}" \
+	&& git clone --quiet https://github.com/frappe/payments apps/payments \
+	&& git -C apps/payments checkout --quiet "${PAYMENTS_REF}" \
+	&& env/bin/pip install --quiet -e apps/crm -e apps/payments
+# Numeric owner: the v16.50 image's frappe user (uid 1000) is in the root group, with no group named frappe.
+COPY --chown=1000:0 crm_heat_tracking apps/crm_heat_tracking
+COPY --chown=1000:0 public_site_router apps/public_site_router
+RUN env/bin/pip install --quiet -e apps/crm_heat_tracking -e apps/public_site_router
+COPY --chown=1000:0 crm_multi_company apps/crm_multi_company
+RUN env/bin/pip install --quiet --no-deps -e apps/crm_multi_company

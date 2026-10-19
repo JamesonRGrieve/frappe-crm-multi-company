@@ -1,0 +1,83 @@
+{
+ "actions": [],
+ "autoname": "field:business_name",
+ "creation": "2026-10-19 12:00:00.000000",
+ "description": "A business this site's CRM serves: the Public Sites its website leads come from, and the company it bills under on each date.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "business_name",
+  "companies_section",
+  "companies",
+  "sites_section",
+  "public_sites"
+ ],
+ "fields": [
+  {
+   "fieldname": "business_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Business Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "The company each deal is quoted under, by the date of the quotation. Periods may not overlap; leave Valid From or Valid To empty for an open end.",
+   "fieldname": "companies_section",
+   "fieldtype": "Section Break",
+   "label": "Bills Under"
+  },
+  {
+   "fieldname": "companies",
+   "fieldtype": "Table",
+   "label": "Companies",
+   "options": "CRM Business Company"
+  },
+  {
+   "description": "Leads from these Public Sites belong to this business. A site belongs to one business.",
+   "fieldname": "sites_section",
+   "fieldtype": "Section Break",
+   "label": "Websites"
+  },
+  {
+   "fieldname": "public_sites",
+   "fieldtype": "Table",
+   "label": "Public Sites",
+   "options": "CRM Business Site"
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-19 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM Multi Company",
+ "name": "CRM Business",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Sales User"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
