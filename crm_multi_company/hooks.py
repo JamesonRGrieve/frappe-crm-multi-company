@@ -9,8 +9,9 @@ app_email = "jameson@zephyrex.ca"
 app_license = "AGPL-3.0-or-later"
 app_version = _version
 
-# CRM for leads and deals; ERPNext for Company and Quotation.
-required_apps = ["frappe", "erpnext", "crm"]
+# CRM for leads and deals; ERPNext for Company and Quotation; the Public Site router for a business's sites and
+# their Site Editors.
+required_apps = ["frappe", "erpnext", "crm", "public_site_router"]
 
 # The Business field on leads and deals, and its CRM side-panel section (idempotent).
 after_install = "crm_multi_company.install.after_install"
@@ -25,4 +26,21 @@ doc_events = {
 # ERPNext CRM Settings.
 override_whitelisted_methods = {
 	"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_quotation_url": "crm_multi_company.business.get_quotation_url",
+}
+
+# Site Editors (public_site_router) see only the leads, deals and their tasks, notes and call logs of their own
+# sites' businesses; ANDed with CRM's own hooks.
+permission_query_conditions = {
+	"CRM Lead": "crm_multi_company.site_editors.lead_conditions",
+	"CRM Deal": "crm_multi_company.site_editors.deal_conditions",
+	"CRM Task": "crm_multi_company.site_editors.reference_conditions",
+	"FCRM Note": "crm_multi_company.site_editors.reference_conditions",
+	"CRM Call Log": "crm_multi_company.site_editors.reference_conditions",
+}
+has_permission = {
+	"CRM Lead": "crm_multi_company.site_editors.record_permission",
+	"CRM Deal": "crm_multi_company.site_editors.record_permission",
+	"CRM Task": "crm_multi_company.site_editors.reference_permission",
+	"FCRM Note": "crm_multi_company.site_editors.reference_permission",
+	"CRM Call Log": "crm_multi_company.site_editors.reference_permission",
 }

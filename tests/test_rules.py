@@ -75,3 +75,30 @@ def test_with_query_value_appends_when_missing():
 
 def test_with_query_value_does_not_touch_a_similar_key():
 	assert with_query_value("https://x/new?company_name=X", "company", "B") == "https://x/new?company_name=X&company=B"
+
+
+def _quote(value: str) -> str:
+	return "'" + value.replace("'", "''") + "'"
+
+
+def test_business_condition_lists_the_businesses():
+	from crm_multi_company.rules import business_condition
+
+	assert business_condition("t.crm_business", ["A", "O'B"], _quote) == "t.crm_business in ('A', 'O''B')"
+
+
+def test_no_businesses_match_nothing():
+	from crm_multi_company.rules import business_condition, reference_condition
+
+	assert business_condition("t.crm_business", [], _quote) == "1=0"
+	assert reference_condition("`tabFCRM Note`", "CRM Lead", "CRM Deal", "crm_business", [], _quote) == "1=0"
+
+
+def test_reference_condition_covers_leads_and_deals():
+	from crm_multi_company.rules import reference_condition
+
+	sql = reference_condition("`tabFCRM Note`", "CRM Lead", "CRM Deal", "crm_business", ["A"], _quote)
+	assert "`tabFCRM Note`.reference_doctype = 'CRM Lead'" in sql
+	assert "select name from `tabCRM Lead` where `crm_business` in ('A')" in sql
+	assert "`tabFCRM Note`.reference_doctype = 'CRM Deal'" in sql
+	assert "select name from `tabCRM Deal` where `crm_business` in ('A')" in sql

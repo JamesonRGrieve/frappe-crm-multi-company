@@ -7,6 +7,7 @@ inclusive date ranges, open at either end when a bound is missing.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
 from urllib.parse import quote
@@ -60,3 +61,25 @@ def with_query_value(url: str, key: str, value: str) -> str:
 	pairs = [part for part in query.split("&") if part and part.split("=", 1)[0] != key]
 	pairs.append(f"{key}={quote(value)}")
 	return f"{base}?{'&'.join(pairs)}"
+
+
+def business_condition(column: str, businesses: list[str], quote: Callable[[str], str]) -> str:
+	"""SQL limiting ``column`` (a business link) to ``businesses``; nothing at all when there are none."""
+	if not businesses:
+		return "1=0"
+	return f"{column} in ({', '.join(quote(b) for b in businesses)})"
+
+
+def reference_condition(
+	table: str, lead: str, deal: str, field: str, businesses: list[str], quote: Callable[[str], str]
+) -> str:
+	"""SQL limiting a referencing doctype's rows to those of leads or deals of ``businesses``."""
+	if not businesses:
+		return "1=0"
+	inside = ", ".join(quote(b) for b in businesses)
+	return (
+		f"(({table}.reference_doctype = {quote(lead)} and {table}.reference_docname in"
+		f" (select name from `tab{lead}` where `{field}` in ({inside})))"
+		f" or ({table}.reference_doctype = {quote(deal)} and {table}.reference_docname in"
+		f" (select name from `tab{deal}` where `{field}` in ({inside}))))"
+	)
